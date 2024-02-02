@@ -1,4 +1,4 @@
-# sakila-assignment
+# Sakila Úkol
 
 ## 1) Filmy, které se půjčily za poslední rok
 
