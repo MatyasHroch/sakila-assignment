@@ -74,8 +74,9 @@ JOIN
 ORDER BY 
 	late_fee DESC
 ```
-- nikdo žádnou pokutu nedostal
-- zkoušel jsem snížit laťku na 9 dní, tam už jdou vidět výsledky
+### Pozorování...
+- vypadá to, že kromě těch, kteří film nikdy nevrátili, nikdo žádnou pokutu nedostal
+- zkoušel jsem snížit laťku na 9 dní, tam už šly vidět i další výsledky
 
 ## 4) Kolik kdo prodal v každém roce
 
