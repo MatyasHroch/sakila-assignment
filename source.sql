@@ -1,44 +1,36 @@
-# Sakila Úkol
+-- 1) Movies rented in the last year
 
-## 1) Filmy, které se půjčily za poslední rok
-
-```sql
-SELECT DISTINCT
+SELECT DISTINCT 
 	customer.first_name, customer.last_name, address.address
-FROM
+FROM 
 	rental
-JOIN
+JOIN 
 	inventory ON rental.inventory_id = inventory.inventory_id
-JOIN
+JOIN 
 	film ON inventory.film_id = film.film_id
-JOIN
+JOIN 
 	customer ON rental.customer_id = customer.customer_id
-JOIN
+JOIN 
 	address ON customer.address_id = address.address_id
-WHERE
+WHERE 
 	rental.rental_date >= NOW() - INTERVAL '1 year'
-```
 
-## 2) Kolik filmů je v jaké kategorii
 
-```sql
-SELECT
+-- 2) How many movies are in which category, sorted by the number of movies in the category
+
+SELECT 
 	category.name, COUNT(film_category.film_id) AS film_count
-FROM
+FROM 
 	category
-LEFT JOIN
+LEFT JOIN 
 	film_category ON category.category_id = film_category.category_id
-GROUP BY
+GROUP BY 
 	category.name
 ORDER BY
 	film_count DESC;
-```
 
-## 3) Pokuta
-
-### Pomocná funkce
-
-```sql
+-- 3) View a fee for each customer who has returned a movie late or never returned it
+---- Helper function:
 CREATE OR REPLACE FUNCTION calculate_late_fee(
     p_rental_date TIMESTAMP,
     p_return_date TIMESTAMP,
@@ -57,12 +49,9 @@ BEGIN
     RETURN p_rental_rate * 0.01 * days_late;
 END;
 $$ LANGUAGE PLPGSQL;
-```
 
-### Samotné Query
-
-```sql
-SELECT
+-- The main query:
+SELECT 
 	calculate_late_fee(rental.rental_date, rental.return_date, film.rental_rate, 14) AS late_fee,
 	customer.last_name,
 	customer.first_name,
@@ -77,18 +66,10 @@ JOIN
     film ON inventory.film_id = film.film_id
 JOIN
 	customer ON rental.customer_id = customer.customer_id
-ORDER BY
+ORDER BY 
 	late_fee DESC
-```
 
-### Pozorování...
-
-- vypadá to, že kromě těch, kteří film nikdy nevrátili, nikdo žádnou pokutu nedostal
-- zkoušel jsem snížit laťku na 9 dní, tam už šly vidět i další výsledky
-
-## 4) Kolik kdo prodal v každém roce
-
-```sql
+-- 4) Number of rentals made by each staff member in each year
 SELECT
     EXTRACT(YEAR FROM rental.rental_date) AS rental_year,
     staff.staff_id,
@@ -107,13 +88,7 @@ ORDER BY
     EXTRACT(YEAR FROM rental.rental_date) DESC,
     staff.staff_id;
 
-```
-
-## 5) Funkce pro přidání filmu
-
-### Definice funkce
-
-```sql
+-- 5) Function to add a new film
 CREATE OR REPLACE FUNCTION add_new_film(
     p_title VARCHAR(255),
     p_description TEXT,
@@ -162,11 +137,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-```
-
-### Příklad použití
-
-```sql
+-- Example of adding a new film using the function
 SELECT add_new_film(
     p_title => 'The Title',
     p_description => 'Description of the film',
@@ -181,12 +152,9 @@ SELECT add_new_film(
     p_special_features => NULL::text[],
     p_fulltext => to_tsvector('Full text of the film')
 );
-```
 
-### Ověření vložení
-
-```sql
-SELECT
+-- Query to check if the film was added
+SELECT 
 	*
 FROM
 	film
